@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ওজন ও দাম ক্যালকুলেটর</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1F6F54">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F1EADA;
+            --card: #FFFFFF;
+            --ink: #26301F;
+            --muted: #7A7160;
+            --primary: #1F6F54;
+            --primary-dark: #164F3C;
+            --accent: #D9A441;
+            --danger: #C0463B;
+            --danger-dark: #9E3A30;
+            --radius: 18px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Hind Siliguri', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 15% 8%, rgba(217,164,65,0.16), transparent 45%),
+                radial-gradient(circle at 85% 92%, rgba(31,111,84,0.14), transparent 50%),
+                var(--bg);
+            color: var(--ink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .calculator-card {
+            position: relative;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 45px rgba(38,48,31,0.16), 0 2px 8px rgba(38,48,31,0.08);
+            width: 100%;
+            max-width: 400px;
+            padding: 28px 26px 26px;
+            overflow: hidden;
+        }
+        .calculator-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 55%, var(--danger) 100%);
+        }
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.02em;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+        .eyebrow svg { width: 18px; height: 18px; flex-shrink: 0; }
+        h2 {
+            color: var(--ink);
+            margin-bottom: 22px;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .input-group { margin-bottom: 16px; }
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 13.5px;
+        }
+        .field-wrap { position: relative; display: flex; align-items: center; }
+        .field-unit {
+            position: absolute;
+            left: 14px;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .field-unit.right { left: auto; right: 14px; }
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid #E4DECB;
+            background: #FBF9F2;
+            border-radius: 11px;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+        input.has-prefix { padding-left: 34px; }
+        input.has-suffix { padding-right: 42px; }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input::placeholder { color: #B8B09B; }
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31,111,84,0.14);
+            background: #FFFFFF;
+        }
+        .weight-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .scale-screen {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2B8A68 0%, #1F6F54 55%, #17573F 100%);
+            border-radius: 16px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(31,111,84,0.32), inset 0 1px 0 rgba(255,255,255,0.14);
+        }
+        .scale-screen::before {
+            content: "";
+            position: absolute;
+            top: -40%;
+            left: -10%;
+            width: 140%;
+            height: 90%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.16), transparent 70%);
+            pointer-events: none;
+        }
+        .scale-screen::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+            pointer-events: none;
+        }
+        .result-title {
+            font-size: 12px;
+            color: rgba(255,255,255,0.72);
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            font-weight: 600;
+            position: relative;
+        }
+        .result-row { display: flex; align-items: baseline; gap: 6px; position: relative; }
+        .result-currency {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 20px;
+            color: #F3CE7A;
+        }
+        .result-price {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 36px;
+            font-weight: 400;
+            color: #FFF3D9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            letter-spacing: 0.01em;
+        }
+        .result-suffix { font-size: 13px; color: rgba(255,255,255,0.6); margin-left: 4px; }
+        .clear-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px;
+            background: var(--danger);
+            color: #FFF6F2;
+            border: none;
+            border-radius: 11px;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 15.5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: background 0.2s, transform 0.05s;
+        }
+        .clear-btn svg { width: 17px; height: 17px; }
+        .clear-btn:hover { background: var(--danger-dark); }
+        .clear-btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <div class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3h12l-1.5 6.5a5 5 0 0 1-9 0L6 3Z"/>
+            <path d="M12 15v6"/>
+            <path d="M8 21h8"/>
+        </svg>
+        বাজার হিসাব
+    </div>
+    <h2>ওজন ও দাম ক্যালকুলেটর</h2>
+
+    <div class="input-group">
+        <label for="pricePerKg">১ কেজির দাম</label>
+        <div class="field-wrap">
+            <span class="field-unit">৳</span>
+            <input type="number" id="pricePerKg" class="has-prefix" placeholder="যেমন: ১৭০" inputmode="decimal" oninput="calculatePrice()">
+        </div>
+    </div>
+
+    <div class="weight-row">
+        <div class="input-group">
+            <label for="kg">কেজি</label>
+            <div class="field-wrap">
+                <input type="number" id="kg" class="has-suffix" placeholder="৪" inputmode="decimal" oninput="calculatePrice()">
+                <span class="field-unit right">kg</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="gram">গ্রাম</label>
+            <div class="field-wrap">
+                <input type="number" id="gram" class="has-suffix" placeholder="৩০০" inputmode="decimal" oninput="calculatePrice()">
+                <span class="field-unit right">g</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="scale-screen">
+        <div class="result-title">মোট দাম</div>
+        <div class="result-row">
+            <span class="result-currency">৳</span>
+            <span class="result-price" id="totalPrice">0.00</span>
+            <span class="result-suffix">টাকা</span>
+        </div>
+    </div>
+
+    <button class="clear-btn" onclick="clearFields()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/>
+            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        </svg>
+        সব মুছুন
+    </button>
+</div>
+
+<script>
+    function calculatePrice() {
+        const pricePerKg = parseFloat(document.getElementById('pricePerKg').value) || 0;
+        const kg = parseFloat(document.getElementById('kg').value) || 0;
+        const gram = parseFloat(document.getElementById('gram').value) || 0;
+
+        const totalKg = kg + (gram / 1000);
+        const total = pricePerKg * totalKg;
+
+        document.getElementById('totalPrice').innerText = total.toFixed(2);
+    }
+
+    function clearFields() {
+        document.getElementById('pricePerKg').value = '';
+        document.getElementById('kg').value = '';
+        document.getElementById('gram').value = '';
+        document.getElementById('totalPrice').innerText = '0.00';
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js').catch(() => {});
+        });
+    }
+</script>
+
+</body>
+</html>
